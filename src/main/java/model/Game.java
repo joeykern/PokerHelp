@@ -3,24 +3,36 @@ package model;
 import java.util.Objects;
 
 public class Game {
-    private String gameId;
+
+    private int id;
+    private String groupId;
     private String gameName;
     private String gameTime;
     private String entryFee;
     private String registrants;
 
-    public Game(String gameId, String gameName, String gameTime,
+    public Game(String groupId, String gameName, String gameTime,
                 String entryFee, String registrants) {
-        this.gameId = gameId;
+        this.groupId = groupId;
         this.gameName = gameName;
         this.gameTime = gameTime;
         this.entryFee = entryFee;
         this.registrants = registrants;
     }
 
-    public String getGameId() {
-        return gameId;
+    public Game(int id, String groupId, String gameName, String gameTime,
+                String entryFee, String registrants) {
+        this.id = id;
+        this.groupId = groupId;
+        this.gameName = gameName;
+        this.gameTime = gameTime;
+        this.entryFee = entryFee;
+        this.registrants = registrants;
     }
+
+    public int getId() { return id;}
+
+    public String getGroupId() { return groupId;}
 
     public String getGameName() {
         return gameName;
@@ -38,9 +50,9 @@ public class Game {
         return registrants;
     }
 
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
-    }
+    public void setId(int id) { this.id = id;}
+
+    public void setGroupId(String groupId) { this.groupId = groupId;}
 
     public void setGameName(String gameName) {
         this.gameName = gameName;
@@ -63,8 +75,7 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return gameId.equals(game.gameId) &&
-                gameName.equals(game.gameName) &&
+        return gameName.equals(game.gameName) &&
                 gameTime.equals(game.gameTime) &&
                 entryFee.equals(game.entryFee) &&
                 Objects.equals(registrants, game.registrants);
@@ -72,14 +83,13 @@ public class Game {
 
     @Override
     public int hashCode() {
-        return Objects.hash(gameId, gameName, gameTime, entryFee, registrants);
+        return Objects.hash(groupId, gameName, gameTime, entryFee, registrants);
     }
 
     @Override
     public String toString() {
         return "Game{" +
-                "gameId='" + gameId + '\'' +
-                ", gameName='" + gameName + '\'' +
+                "gameName='" + gameName + '\'' +
                 ", gameTime='" + gameTime + '\'' +
                 ", entryFee='" + entryFee + '\'' +
                 ", registrants='" + registrants + '\'' +

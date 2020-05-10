@@ -18,20 +18,20 @@ public class JDBCGameCRUDPersister implements CRUDPersister<Game> {
     @Override
     public void create(Game game) throws CrudException, SQLException {
         try {
-            String gameId = game.getGameId();
-            if (gameId == null) {
-                throw new SQLException("null game id");
+            String gameName = game.getGameName();
+            if (gameName == null) {
+                throw new SQLException("null game name");
             }
         } catch (SQLException e) {
-            throw new CrudException("Unable to create the game due to null id", e);
+            throw new CrudException("Unable to create the game due to null name", e);
         }
 
-        String sql = "INSERT INTO Games(gameId, gameName, gameTime, entryFee, registrants) VALUES (?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO Games(groupId, gameName, gameTime, entryFee, registrants) VALUES (?, ?, ?, ?, ?);";
 
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql);
-            pst.setString(1, game.getGameId());
+            pst.setString(1, game.getGroupId());
             pst.setString(2, game.getGameName());
             pst.setString(3, game.getGameTime());
             pst.setString(4, game.getEntryFee());
@@ -45,19 +45,19 @@ public class JDBCGameCRUDPersister implements CRUDPersister<Game> {
     }
 
     @Override
-    public Game read(String gameId) throws CrudException {
-        String sql = "SELECT * FROM Games WHERE gameId = ?;";
+    public Game read(String gameName) throws CrudException {
+        String sql = "SELECT * FROM Games WHERE gameName = ?;";
         PreparedStatement pst = null;
         Game game = null;
         try {
             pst = conn.prepareStatement(sql);
-            pst.setString(1, gameId);
+            pst.setString(1, gameName);
             ResultSet rs = pst.executeQuery();
 
             if (!rs.next()) return null;
 
             game = new Game(
-                    rs.getString("gameId"),
+                    rs.getString("groupId"),
                     rs.getString("gameName"),
                     rs.getString("gameTime"),
                     rs.getString("entryFee"),
@@ -73,16 +73,17 @@ public class JDBCGameCRUDPersister implements CRUDPersister<Game> {
 
     @Override
     public void update(Game game) {
-        String sql = "UPDATE Games SET gameName = ?, gameTime = ?, entryFee = ?, registrants = ? WHERE gameId = ?;";
+        String sql = "UPDATE Games SET groupId = ?, gameName = ?, gameTime = ?, entryFee = ?, registrants = ? WHERE id = ?;";
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql);
-            pst.setString(1, game.getGameName());
+            pst.setString(1, game.getGroupId());
+            pst.setString(2, game.getGameName());
 
-            pst.setString(2, game.getGameTime());
-            pst.setString(3, game.getEntryFee());
-            pst.setString(4, game.getRegistrants());
-            pst.setString(5, game.getGameId());
+            pst.setString(3, game.getGameTime());
+            pst.setString(4, game.getEntryFee());
+            pst.setString(5, game.getRegistrants());
+            pst.setInt(6, game.getId());
 
             pst.executeUpdate();
         } catch (SQLException e) {
@@ -127,6 +128,19 @@ public class JDBCGameCRUDPersister implements CRUDPersister<Game> {
         return assignments;
     }*/
 
+    public void delete(String gameName, String groupId) throws CrudException {
+        String sql = "DELETE FROM Games WHERE gameName = ? AND groupId = ?;";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql);
+            pst.setString(1, gameName);
+            pst.setString(2, groupId);
+            pst.executeUpdate();
+        } catch (SQLException e) {
+            throw new CrudException("Unable to delete game", e);
+        }
+    }
+
     @Override
     public void delete(String gameName) throws CrudException {
         String sql = "DELETE FROM Games WHERE gameName = ?;";
@@ -168,7 +182,7 @@ public class JDBCGameCRUDPersister implements CRUDPersister<Game> {
 
             while (rs.next()) {
                 game = new Game(
-                        rs.getString("gameId"),
+                        rs.getString("groupId"),
                         rs.getString("gameName"),
                         rs.getString("gameTime"),
                         rs.getString("entryFee"),
